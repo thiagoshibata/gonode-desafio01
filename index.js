@@ -14,10 +14,9 @@ app.use(express.urlencoded({ extended: false }));
 app.set("view engine", "njk");
 
 const ageMiddleware = (req, res, next) => {
-  if (req.query.age == "") {
-    console.log("Digite a idade");
-    return res.render("formAge");
-  }
+  const { age } = req.query;
+
+  if (!age) return res.redirect("/");
 
   return next();
 };
@@ -27,19 +26,19 @@ app.get("/", (req, res) => {
 });
 
 app.post("/check", (req, res) => {
-  if (req.body.age >= 18) return res.redirect(`/major/?age=${req.body.age}`);
-
-  return res.redirect(`minor/?age=${req.body.age}`);
+  const { age } = req.body;
+  if (age >= 18) return res.redirect(`/major/?age=${age}`);
+  else return res.redirect(`/minor/?age=${age}`);
 });
 
 app.get("/major", ageMiddleware, (req, res) => {
-  idade = req.query.age;
-  return res.render("major", { idade });
+  const { age } = req.query;
+  return res.render("major", { age });
 });
 
 app.get("/minor", ageMiddleware, (req, res) => {
-  idade = req.query.age;
-  return res.render("minor", { idade });
+  const { age } = req.query;
+  return res.render("minor", { age });
 });
 
 app.listen(3000);
